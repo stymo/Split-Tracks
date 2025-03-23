@@ -1,12 +1,13 @@
 # Split Tracks
 
-Github repository: *github.com/yourAccount/Name-of-App* 
+Github repository: *https://github.com/stymo/Split-Tracks(
 
 ## Description
 Work-in-progress: currently implements a super naive track splitter based on given gap-time threshold
 
 ## Documentation
-Work-in-progress: currently implements a super naive track splitter based on given gap-time threshold
+Work-in-progress: currently implements a super naive track splitter based on given gap-time threshold.
+Mainly working through this as an attempt to work through the MoveApps ecosystem.
 
 ### Application scope
 #### Generality of App usability
