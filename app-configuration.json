@@ -1,4 +1,5 @@
 {
   "app-name": "MoveApps Python SDK",
-  "year": 2014
+  "gap-interval": "hours",
+  "gap-amount": 24
 }

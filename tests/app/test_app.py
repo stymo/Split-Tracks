@@ -1,5 +1,7 @@
 import unittest
 import os
+from datetime import datetime
+
 from tests.config.definitions import ROOT_DIR
 from app.app import App
 from sdk.moveapps_io import MoveAppsIo
@@ -17,7 +19,8 @@ class MyTestCase(unittest.TestCase):
         # prepare
         data: mpd.TrajectoryCollection = pd.read_pickle(os.path.join(ROOT_DIR, 'tests/resources/app/input4_LatLon.pickle'))
         config: dict = {
-            "year": 2014
+            "gap-interval": "hours",
+            "gap-amount": 24,
         }
 
         # execute
@@ -26,28 +29,25 @@ class MyTestCase(unittest.TestCase):
     def test_app_config(self):
         # prepare
         config = {
-            "year": 2014
+            "gap-interval": "hours",
+            "gap-amount": 24,
         }
 
         # execute
         actual = config
 
         # verify
-        self.assertEqual(2014, actual["year"])
+        self.assertEqual("hours", actual["gap-interval"])
+        self.assertEqual(24, actual["gap-amount"])
 
     def test_year_present(self):
         # prepare input data
         df = pd.DataFrame([
             {'timestamp_utc': "2001-06-11 09:00:00", 'coords_x': 1, 'coords_y': 5, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2001-07-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-08-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-09-14 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-10-15 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2000-06-11 09:00:00", 'coords_x': 1, 'coords_y': 5, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2000-07-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-08-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-09-14 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-10-15 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_2'}
+            {'timestamp_utc': "2001-06-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_1'},
+            {'timestamp_utc': "2001-06-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_1'},
+            {'timestamp_utc': "2001-06-15 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_1'},
+            {'timestamp_utc': "2001-06-16 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_1'},
         ])
         input = mpd.TrajectoryCollection(
             df,
@@ -59,77 +59,15 @@ class MyTestCase(unittest.TestCase):
 
         # prepare configuration
         config = {
-            "year": 2001
-        }
-
-        # prepare expected data
-        df_e = pd.DataFrame([
-            {'timestamp_utc': "2001-06-11 09:00:00", 'coords_x': 1, 'coords_y': 5, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2001-07-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2001-08-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-09-14 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-10-15 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_2'}
-        ])
-        expected = mpd.TrajectoryCollection(
-            df_e,
-            traj_id_col='track_id',
-            t='timestamp_utc',
-            crs='epsg:4326',
-            x='coords_x', y='coords_y'
-        )
-
-        # execute
-        actual = self.sut.execute(data=input, config=config)
-
-        # verify timestamps
-        self.assertEqual(actual.to_point_gdf().index.strftime("%Y-%m-%d %H:%M:%S").tolist(),expected.to_point_gdf().index.strftime("%Y-%m-%d %H:%M:%S").tolist())
-
-        # verify track ids
-        self.assertEqual(actual.to_point_gdf()[actual.get_traj_id_col()].unique().tolist(), expected.to_point_gdf()[expected.get_traj_id_col()].unique().tolist())
-
-    def test_year_not_present(self):
-        # prepare input data
-        df = pd.DataFrame([
-            {'timestamp_utc': "2001-06-11 09:00:00", 'coords_x': 1, 'coords_y': 5, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2001-07-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-08-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-09-14 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2002-10-15 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_1'},
-            {'timestamp_utc': "2000-06-11 09:00:00", 'coords_x': 1, 'coords_y': 5, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2000-07-12 09:00:00", 'coords_x': 2, 'coords_y': 4, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-08-13 09:00:00", 'coords_x': 3, 'coords_y': 3, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-09-14 09:00:00", 'coords_x': 4, 'coords_y': 2, 'track_id': 'ID_2'},
-            {'timestamp_utc': "2001-10-15 09:00:00", 'coords_x': 5, 'coords_y': 1, 'track_id': 'ID_2'}
-        ])
-        input = mpd.TrajectoryCollection(
-            df,
-            traj_id_col='track_id',
-            t='timestamp_utc',
-            crs='epsg:4326',
-            x='coords_x', y='coords_y'
-        )
-
-        # prepare configuration
-        config = {
-            "year": 2100
+            "gap-interval": "hours",
+            "gap-amount": 24,
         }
 
         # execute
         actual = self.sut.execute(data=input, config=config)
 
-        # verify
-        self.assertIsNone(actual)
-
-    """
-    # Use this test if the App should return the input data
-    def test_app_returns_input(self):
-        # prepare
-        expected: mpd.TrajectoryCollection = pd.read_pickle(os.path.join(ROOT_DIR, 'tests/resources/app/input2_LatLon.pickle'))
-        config: dict = {}
-
-        # execute
-        actual = self.sut.execute(data=expected, config=config)
-
-        # verif
-        self.assertEqual(expected, actual)
-    """
+        self.assertEqual(len(actual.trajectories), 2)
+        self.assertEqual(actual.trajectories[0].get_start_time(), datetime(2001,6,11,9))
+        self.assertEqual(actual.trajectories[0].get_end_time(), datetime(2001,6,13,9))
+        self.assertEqual(actual.trajectories[1].get_start_time(), datetime(2001,6,15,9))
+        self.assertEqual(actual.trajectories[1].get_end_time(), datetime(2001,6,16,9))

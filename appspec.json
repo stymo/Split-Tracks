@@ -2,30 +2,18 @@
   "version": "1.2",
   "settings": [
     {
-      "id": "app-name",
-      "name": "App Name",
-      "description": "You can personalize the app name.",
-      "default": "Python SDK",
+      "id": "gap-interval",
+      "name": "Gap interval",
+      "description": "Time interval of gaps: ('days', 'hours', 'minutes')",
+      "defaultValue": null,
       "type": "STRING"
     },
     {
-      "id": "year",
-      "name": "The year",
-      "description": "Enter the year for which you want to keep the data",
-      "defaultValue": 1960,
+      "id": "gap-value",
+      "name": "Gap value",
+      "description": "The number of gap-intervals at which a gap is found",
+      "defaultValue": null,
       "type": "INTEGER"
-    },
-    {
-      "id": "auxiliary-file-a",
-      "name": "Your message",
-      "description": "You can personalize the app by providing a file.",
-      "type": "USER_FILE"
-    }
-  ],
-  "providedAppFiles": [
-    {
-      "settingId": "auxiliary-file-a",
-      "from": "resources/auxiliary/user-files/provided-app-files/auxiliary-file-a/sample.txt"
     }
   ],
   "license": {
@@ -38,10 +26,10 @@
   ],
   "people": [
     {
-      "firstName": "Charles",
+      "firstName": "Sam",
       "middleInitials": null,
-      "lastName": "Darwin",
-      "email": "creator@example.com",
+      "lastName": "Tymorek",
+      "email": "samtymorek@gmail.com",
       "roles": [
         "author",
         "creator"
@@ -50,19 +38,5 @@
       "affiliation": null,
       "affiliationRor": null
     }
-  ],
-  "funding": [
-    {
-      "name": "funder name",
-      "comment": "grant for App"
-    }
-  ],
-  "references": [
-    {
-      "type": "IsDescribedBy",
-      "note": "Darwin, C. 1900. The creation. Journal XY. 1-2",
-      "url": "https://anylink.xyz"
-    }
   ]
 }
-
